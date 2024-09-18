@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+  db:
+    image: mysql:8
+    environment:
+      MYSQL_DATABASE: mydb
+      MYSQL_USER: myuser
+      MYSQL_PASSWORD: mypassword
+      MYSQL_ROOT_PASSWORD: rootpassword
+    volumes:
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "3306:3306"
+
+  web:
+    build: ./web
+    depends_on:
+      - db
+    ports:
+      - "5000:5000"
+    environment:
+      - DATABASE_URL=mysql://myuser:mypassword@db:3306/mydb
+
+networks:
+  default:
+    driver: bridge
